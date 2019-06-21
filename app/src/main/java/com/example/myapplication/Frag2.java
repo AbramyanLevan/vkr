@@ -7,6 +7,7 @@ import android.app.ActivityManager;
 import android.app.TimePickerDialog;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.arch.persistence.room.Room;
 import android.content.Context;
 
 import android.content.Intent;
@@ -60,11 +61,16 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
     private RecyclerView recyclerView;
     private SwipeRefreshLayout sr;
     private List<String> nameList = new ArrayList<>();
+    private List<String> packageList = new ArrayList<>();
     private List<Drawable> iconsList = new ArrayList<>();
-
+    private Table.LimitDAO limitDAO;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
     long DayInMillis = 24 * 3600 * 1000;
+    String[] args = new String[]{"com.vkontakte.android", "com.instagram.android", "com.facebook.android", "org.telegram.messenger",
+            "com.viber.voip", "ru.ok.android", "com.google.android.youtube", "com.whatsapp", "com.snapchat.android", "tv.twitch.android.app"
+            , "com.discord", "com.skype.raider", "com.tumblr", "com.twitter.android", "com.pinterest"};
+
     public Frag2() {
         // Required empty public constructor
     }
@@ -75,7 +81,10 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_frag2, container, false);
 
-
+        Table.AppDatabase database = Room.databaseBuilder(getActivity(), Table.AppDatabase.class, "db-contacts1")
+                .allowMainThreadQueries()   //Allows room to do operation on main thread
+                .build();
+        limitDAO = database.getLimitDAO();
         sr = (SwipeRefreshLayout) view.findViewById(R.id.sr2);
         sr.setOnRefreshListener(this);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler2);
@@ -87,7 +96,7 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
         showUsage();
 
 
-        adapter = new Adapter2(nameList, iconsList,this);
+        adapter = new Adapter2(nameList, iconsList, this);
         recyclerView.setAdapter(adapter);
         return view;
 
@@ -105,20 +114,13 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
         long endMillis = calendar.getTimeInMillis();
 
         Map<String, UsageStats> queryUsageStats = usageStatsManager.queryAndAggregateUsageStats(startMillis, endMillis);
-
-
-        String[] args = new String[]{"com.vkontakte.android", "com.instagram.android", "com.facebook.android", "org.telegram.messenger",
-                "com.viber.voip", "ru.ok.android", "com.google.android.youtube", "com.whatsapp", "com.snapchat.android", "tv.twitch.android.app"
-                , "com.discord", "com.skype.raider", "com.tumblr", "com.twitter.android", "com.pinterest"};
         List<String> list = Arrays.asList(args);
         List<String> appsToShow = new ArrayList<>(list);
-
-
         queryUsageStats.forEach((String key, UsageStats usage) ->
         {
             if (appsToShow.contains(key)) {
                 nameList.add(label(usage.getPackageName()));
-
+                packageList.add(key);
                 try {
                     Drawable icon = getActivity().getPackageManager().getApplicationIcon(usage.getPackageName());
                     iconsList.add(icon);
@@ -127,7 +129,6 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
                 }
             }
         });
-
 
     }
 
@@ -141,7 +142,7 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
             @Override
             protected Object doInBackground(Object[] objects) {
                 nameList.clear();
-              ;
+                ;
                 showUsage();
                 return null;
             }
@@ -174,34 +175,51 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
-    public void onNoteClick(int position)  {
-
-   AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
-    View mView = getLayoutInflater().inflate(R.layout.dialog,null);
-       final TextView textView = (TextView) mView.findViewById(R.id.timelimit);
+    public void onNoteClick(int position) {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(getActivity());
+        View mView = getLayoutInflater().inflate(R.layout.dialog, null);
+        TimePicker timePicker = (TimePicker) mView.findViewById(R.id.timePicker);
+        timePicker.setIs24HourView(true);
+        Table cur = limitDAO.getCurrent(nameList.get(position));
+        if (cur != null) {
+            long d = cur.getAppLimit() / 1000;
+            timePicker.setHour((int)(d / 3600));
+            timePicker.setMinute((int)((d - (d / 3600) * 3600)) / 60);
+        }
         Button enter = (Button) mView.findViewById(R.id.entBut);
+        mBuilder.setView(mView);
+        AlertDialog dialog = mBuilder.create();
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!textView.getText().toString().isEmpty()) {
-                    Toast.makeText(getActivity(), "Worked", Toast.LENGTH_SHORT).show();
 
+                limitDAO.getAll().forEach(
+                        table -> {
+                            Log.e("msg", table.toString());
+                        }
+                );
 
+                long hinmil = timePicker.getHour();
+                long minmil = timePicker.getMinute();
 
+                Table cur = limitDAO.getCurrent(nameList.get(position));
+                if (cur != null) {
+                    limitDAO.delete(cur);
                 }
-                else {
-                    Toast.makeText(getActivity(), "Enter something", Toast.LENGTH_SHORT).show();
-                }
+                Table table = new Table();
+                table.setAppName(nameList.get(position));
+                table.setAppPackage(packageList.get(position));
+                table.setAppLimit((hinmil * 3600 + minmil * 60) * 1000);
+                limitDAO.insert(table);
+                dialog.dismiss();
 
-
+                Intent broadcastIntent = new Intent("com.example.action.CAT");
+                broadcastIntent.setClass(getActivity(), SensorRestartBroadcastReceiver.class);
+                getActivity().sendBroadcast(broadcastIntent);
             }
         });
-        mBuilder.setView(mView);
-        AlertDialog dialog = mBuilder.create();
+
         dialog.show();
-
-
-
 
 
     }

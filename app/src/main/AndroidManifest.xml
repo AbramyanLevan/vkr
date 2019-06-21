@@ -13,13 +13,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name="com.example.myapplication.Watcher"
+            android:enabled="true"
+            android:stopWithTask="false">
+        </service>
+
+        <receiver
+            android:name="com.example.myapplication.SensorRestartBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+            <intent-filter>
+                <action android:name="com.example.action.CAT"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

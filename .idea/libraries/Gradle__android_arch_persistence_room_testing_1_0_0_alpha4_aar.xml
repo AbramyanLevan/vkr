@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: android.arch.persistence.room:testing:1.0.0-alpha4@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/cacb02316238c4978d51038577052851/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/cacb02316238c4978d51038577052851/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/android.arch.persistence.room/testing/1.0.0-alpha4/111ca6b43782e8c1ed7c886bda811904d4a8ef56/testing-1.0.0-alpha4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

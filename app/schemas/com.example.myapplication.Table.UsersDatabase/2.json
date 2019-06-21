@@ -1,0 +1,45 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "e6a8762bc6a3acd76ae9234307cd2279",
+    "entities": [
+      {
+        "tableName": "userlimits",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`noteid` TEXT NOT NULL, `appname` TEXT, `limit` INTEGER NOT NULL, PRIMARY KEY(`noteid`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "noteid",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "apnm",
+            "columnName": "appname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "curlimit",
+            "columnName": "limit",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "noteid"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"e6a8762bc6a3acd76ae9234307cd2279\")"
+    ]
+  }
+}

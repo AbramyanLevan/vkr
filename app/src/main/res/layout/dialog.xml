@@ -3,6 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="5dp">
+
     <ImageView
 
         android:layout_width="match_parent"
@@ -10,26 +11,21 @@
         android:scaleType="center"
         android:background="@color/colorPrimary"
         android:contentDescription="@string/app_name" />
+
     <TextView
         android:id="@+id/textView"
-        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:textStyle="bold"
-        android:layout_marginTop="5dp"
-        android:text="Укажите норму" />
+        android:text="Укажите суточную норму приложения"
+        android:gravity="center"/>
 
-    <EditText
-        android:id="@+id/timelimit"
-        android:layout_width="match_parent"
+    <TimePicker
+        android:id="@+id/timePicker"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Время"
-        android:layout_marginTop="10dp"
-        android:inputType="datetime" />
+        android:timePickerMode="spinner"
+        android:layout_gravity="center"
+        />
 
     <Button
         android:id="@+id/entBut"

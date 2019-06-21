@@ -32,6 +32,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -105,13 +106,13 @@ public class Frag1 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
         UsageStatsManager usageStatsManager;
         usageStatsManager = (UsageStatsManager) getActivity().getSystemService(context.USAGE_STATS_SERVICE);
 
-        Calendar calendar = Calendar.getInstance();
-
-
-
-
-        long startMillis = calendar.getTimeInMillis() - DayInMillis;
-        long endMillis = calendar.getTimeInMillis();
+        ZoneId z = ZoneId.of("Europe/Moscow");
+        ZonedDateTime zdt = ZonedDateTime.now(z);
+        LocalDate today = zdt.toLocalDate();
+        ZonedDateTime zdtTodayStart = today.atStartOfDay(z);
+        ZonedDateTime zdtTodayEnd = today.atStartOfDay(z).plusDays(1);
+        long startMillis = zdtTodayStart.toEpochSecond() * 1000;
+        long endMillis = zdtTodayEnd.toEpochSecond() * 1000;
 
         Map<String, UsageStats> queryUsageStats = usageStatsManager.queryAndAggregateUsageStats(startMillis, endMillis);
 
