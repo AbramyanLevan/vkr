@@ -95,8 +95,8 @@ public class Watcher extends Service {
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, ii, 0);
 
         NotificationCompat.BigTextStyle bigText = new NotificationCompat.BigTextStyle();
-        bigText.bigText("Слышьщь закрой");
-        bigText.setBigContentTitle("Закрой блять "+str);
+        bigText.bigText("На сегодня вы превысили свой лимит времени");
+        bigText.setBigContentTitle("Выйдите из  "+str);
 
         mBuilder.setContentIntent(pendingIntent);
         mBuilder.setSmallIcon(R.mipmap.ic_launcher_round);

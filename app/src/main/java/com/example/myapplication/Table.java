@@ -87,6 +87,10 @@ public  class Table {
         @Query("SELECT * FROM Limits WHERE appName LIKE :name")
         Table  getCurrent(String name);
 
+        @Query("SELECT appLimit FROM Limits WHERE appName LIKE :name")
+        Table  getLimit(String name);
+
+
     }
     @Database(entities = {Table.class}, version = 1)
     public abstract static class AppDatabase extends RoomDatabase {
