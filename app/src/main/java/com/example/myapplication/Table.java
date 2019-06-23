@@ -18,10 +18,12 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @Entity(tableName = "Limits")
 public  class Table {
+
     @Override
     public String toString() {
         return String.format("{id: %d, appName: %s, appLimit: %d}", id, appName, appLimit);
@@ -88,7 +90,7 @@ public  class Table {
         Table  getCurrent(String name);
 
         @Query("SELECT appLimit FROM Limits WHERE appName LIKE :name")
-        Table  getLimit(String name);
+        long  getLimit(String name);
 
 
     }
@@ -108,6 +110,20 @@ public  class Table {
 
     }
 
+    public static String formater(long getLimit) {
+        return String.format("%01d : %02d",
+                TimeUnit.MILLISECONDS.toHours(getLimit),
+                TimeUnit.MILLISECONDS.toMinutes(getLimit) -
+                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(getLimit)));
 
+    }
+    public  static  String precall(String name, Context context){
+         Table.LimitDAO limitDAO;
 
+        Table.AppDatabase database = Room.databaseBuilder(context, Table.AppDatabase.class, "db-contacts1")
+                .allowMainThreadQueries()   //Allows room to do operation on main thread
+                .build();
+        limitDAO = database.getLimitDAO();
+        return formater(limitDAO.getLimit(name));
+    }
 }

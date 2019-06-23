@@ -45,6 +45,7 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -54,7 +55,7 @@ import java.util.TreeMap;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Adapter2.OnNoteListener {
+public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListener, Adapter2.OnNoteListener{
 
 
     private Context context;
@@ -66,6 +67,7 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
     private Table.LimitDAO limitDAO;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
+
     long DayInMillis = 24 * 3600 * 1000;
     String[] args = new String[]{"com.vkontakte.android", "com.instagram.android", "com.facebook.android", "org.telegram.messenger",
             "com.viber.voip", "ru.ok.android", "com.google.android.youtube", "com.whatsapp", "com.snapchat.android", "tv.twitch.android.app"
@@ -96,8 +98,10 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
         showUsage();
 
 
-        adapter = new Adapter2(nameList, iconsList, this);
+        adapter = new Adapter2(nameList, iconsList, this,getContext());
         recyclerView.setAdapter(adapter);
+
+
         return view;
 
     }
@@ -153,6 +157,7 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
                 getActivity().runOnUiThread(() -> sr.setRefreshing(false));
 
                 adapter.notifyDataSetChanged();
+
             }
         }.execute();
 
@@ -202,6 +207,8 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
                 long hinmil = timePicker.getHour();
                 long minmil = timePicker.getMinute();
 
+
+
                 Table cur = limitDAO.getCurrent(nameList.get(position));
                 if (cur != null) {
                     limitDAO.delete(cur);
@@ -211,11 +218,13 @@ public class Frag2 extends Fragment implements SwipeRefreshLayout.OnRefreshListe
                 table.setAppPackage(packageList.get(position));
                 table.setAppLimit((hinmil * 3600 + minmil * 60) * 1000);
                 limitDAO.insert(table);
+
                 dialog.dismiss();
 
                 Intent broadcastIntent = new Intent("com.example.action.CAT");
                 broadcastIntent.setClass(getActivity(), SensorRestartBroadcastReceiver.class);
                 getActivity().sendBroadcast(broadcastIntent);
+
             }
         });
 

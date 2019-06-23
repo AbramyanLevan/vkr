@@ -40,16 +40,15 @@
             android:textSize="18sp"/>
 
 
-
         <TextView
-            android:id="@+id/limit"
-            android:layout_width="87dp"
+            android:id="@+id/hour"
+            android:layout_width="84dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="8dp"
             android:gravity="left"
             android:textAlignment="gravity"
-            android:textSize="18sp"  />
+            android:textSize="18sp" />
 
 
     </LinearLayout>
